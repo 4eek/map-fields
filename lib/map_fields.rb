@@ -57,7 +57,8 @@ module MapFields
       else
         @mapped_fields = MappedFields.new(session[:map_fields][:file], 
                                           params[:fields],
-                                          params[:ignore_first_row])
+                                          params[:ignore_first_row],
+                                          options)
       end
     end
   end
@@ -96,8 +97,9 @@ module MapFields
   end
 
   class MappedFields
-    def initialize(file, mapping, ignore_first_row)
+    def initialize(file, mapping, ignore_first_row, options)
       @file = file
+      @options = options
       @mapping = {}
       @ignore_first_row = ignore_first_row
       mapping.each do |k,v|
@@ -107,7 +109,7 @@ module MapFields
 
     def each
       row_number = 1
-      FasterCSV.foreach(@file, :col_sep => options[:separator]) do |csv_row|
+      FasterCSV.foreach(@file, :col_sep => @options[:separator]) do |csv_row|
         unless row_number == 1 && @ignore_first_row
           row = []
           @mapping.each do |k,v|
